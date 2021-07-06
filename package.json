@@ -1,0 +1,19 @@
+{
+  "name": "cake",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@sapphire/type": "^2.0.11",
+    "discord.js": "^13.0.0-dev.7e30011.1625338909",
+    "moment": "^2.29.1",
+    "mongoose": "^5.13.0",
+    "string-toolkit": "^1.4.0"
+  }
+}
