@@ -1,7 +1,7 @@
 
 const Client = new (require("./structures/client.js"))(
     "c~",
-    [require("./config.json").owners],
+    require("./config.json").owners,
     {
       fetchAllMembers: true,
       partials: ["MESSAGE", "USER", "REACTION"],

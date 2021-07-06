@@ -28,11 +28,6 @@ module.exports = class baseClient extends Client {
   }
   async getUser(message, query, author) {
     if (!query) return author ? message.member : undefined;
-    let checkLength = (text, search) => {
-      let count = 0;
-      text.split("").map(letter => (letter === search ? count++ : ""));
-      return count === 0 ? undefined : count;
-    };
     message.guild.members.fetch({
       withPresences: true
     });
