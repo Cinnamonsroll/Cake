@@ -9,7 +9,8 @@ npm i
 ```
 
 Then create a config.json
-example: ```json
+example: 
+```json
 {
     "token": "Bot token",
     "mongo": "Mongo db uri",
@@ -17,6 +18,5 @@ example: ```json
 }
 ```
 
-```bash
-node .
-``` and the bot "should" start
+`node .`
+and the bot "should" start
