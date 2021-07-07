@@ -26,7 +26,7 @@ module.exports = {
         ],
         player = 0;
       await message.create(
-        `${message.member} would like to play a game of tictactoe against you`,
+        `${message.member} would like to play a game of tictactoe against you, do you accept?`,
         {
           buttons: [
             {
