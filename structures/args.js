@@ -8,11 +8,14 @@ module.exports = async function argSystem(
     let validateType = async (currentArg, type) => {
       if (!/^(command|string|user)/gim.test(type))
         throw new TypeError("Invalid type");
-      if (type.toLowerCase() === "string") return currentArg;
-      else if (type.toLowerCase() === "command")
-        return client.resolveCommand(currentArg);
-      else if (type.toLowerCase() === "user") return await client.getUser(message, currentArg, true);
-      
+      switch(type.toLowerCase()){
+        case "string":
+          return currentArg
+        case "command":
+          return client.resolveCommand(currentArg)
+        case "user":
+          return await client.getUser(message, currentArg, true);
+      }
     };
     let question = async (time, question) => {
       message.create(question, {

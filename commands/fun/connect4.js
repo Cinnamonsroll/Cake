@@ -306,7 +306,8 @@ module.exports = {
               callback: async interaction => {
                 handleButton(interaction);
               }
-            }))
+            })),
+            limit: 4
           }
         );
       }

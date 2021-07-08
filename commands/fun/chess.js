@@ -147,7 +147,7 @@ module.exports = {
           );
           players[player].selected = {};
         }
-        if (
+        if (!selected.piece &&
           (button.emoji &&
             (button.emoji.name.includes("white") &&
               players[player].colour === "black")) ||
