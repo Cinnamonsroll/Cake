@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const { Message } = require("discord.js");
+const cakeMessage = require("../../structures/cakeMessage.js")
 const argSystem = require("../../structures/args.js");
 function permName(bitfield = 0) {
   for (let key in Discord.Permissions.FLAGS)
@@ -10,7 +10,7 @@ module.exports = async (client, message) => {
   const m = message.toJSON();
   m.guild = message.guild;
   m.author = message.author;
-  message = new Message(client, m, message.channel);
+  message = new cakeMessage(client, m, message.channel);
   if (!message.guild || message.author.bot || message.channel.type === "dm")
     return;
   let realPrefix = await client.getPrefixes(message.guild.id);

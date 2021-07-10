@@ -14,7 +14,7 @@ module.exports = {
       },
       message
     }) => {
-     message.create(`Pongf! \`${ping}\`ms`, {
+     message.create(`Pong! \`${ping}\`ms`, {
          reply: message.id
      })
     }

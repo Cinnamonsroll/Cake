@@ -41,7 +41,7 @@ module.exports = {
           client
             .resolveCommand("tag")
             .subcommands
-            .map(x => [...x.aliases.map(y => y.toLowerCase(), x.name.toLowerCase())])
+            .map(x => [...x.aliases.map(y => y.toLowerCase()), x.name.toLowerCase()])
             .includes(name)
         )
           return await message.create(
