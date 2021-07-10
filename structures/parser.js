@@ -1,3 +1,4 @@
+const Discord = require("discord.js");
 module.exports = {
   parseButtons(buttons) {
     let returnButtons = [],
