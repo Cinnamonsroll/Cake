@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 let fetch = require("node-fetch");
-let { buttonParser, dropdownParser } = require("./parser.js");
+let { parseButtons, parseDropdown } = require("./parser.js");
 module.exports = class CakeMessage extends Discord.Message {
   constructor(client, data, channel) {
     super(client, data, channel);
