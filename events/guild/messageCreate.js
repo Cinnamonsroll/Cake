@@ -110,11 +110,10 @@ module.exports = async (client, message) => {
     if (commandContext.message) {
       if (
         "cooldowns" in client.cakeCache &&
-        client.cakeCache.cooldowns[message.author.id] &&
-        client.cakeCache.cooldowns[message.author.id][subCommand.name]
+        client.cakeCache.cooldowns[`${message.author.id}:${subCommand.name}`]
       ) {
         let cooldownTime = (
-          (client.cakeCache.cooldowns[message.author.id][subCommand.name] +
+          (client.cakeCache.cooldowns[`${message.author.id}:${subCommand.name}`] +
             (subCommand.cooldown || 3000) -
             Date.now()) /
           1000
@@ -122,19 +121,17 @@ module.exports = async (client, message) => {
         return await message.create(`Please wait ${cooldownTime} seconds.`);
       }
       subCommand.run(commandContext);
-      let obj = {};
-      obj[subCommand.name] = Date.now();
       client.cakeCache.set("cooldowns", {
         type: "dict",
         sub: {
-          name: message.author.id,
+          name:`${message.author.id}:${subCommand.name}`,
           type: "custom",
-          value: obj,
+          value: Date.now(),
         },
       });
       setTimeout(
         () =>
-          delete client.cakeCache.cooldowns[message.author.id][subCommand.name],
+          delete client.cakeCache.cooldowns[`${message.author.id}:${subCommand.name}`],
         subCommand.cooldown || 3000
       );
     }
@@ -149,11 +146,10 @@ module.exports = async (client, message) => {
     if (commandContext.message) {
       if (
         "cooldowns" in client.cakeCache &&
-        client.cakeCache.cooldowns[message.author.id] &&
-        client.cakeCache.cooldowns[message.author.id][cmd.name]
+        client.cakeCache.cooldowns[`${message.author.id}:${cmd.name}`]
       ) {
         let cooldownTime = (
-          (client.cakeCache.cooldowns[message.author.id][cmd.name] +
+          (client.cakeCache.cooldowns[`${message.author.id}:${cmd.name}`] +
             (cmd.cooldown || 3000) -
             Date.now()) /
           1000
@@ -161,18 +157,16 @@ module.exports = async (client, message) => {
         return await message.create(`Please wait ${cooldownTime} seconds.`);
       }
       cmd.run(commandContext);
-      let obj = {};
-      obj[cmd.name] = Date.now();
       client.cakeCache.set("cooldowns", {
         type: "dict",
         sub: {
-          name: message.author.id,
+          name: `${message.author.id}:${cmd.name}`,
           type: "custom",
-          value: obj,
+          value: Date.now(),
         },
       });
       setTimeout(
-        () => delete client.cakeCache.cooldowns[message.author.id][cmd.name],
+        () => delete client.cakeCache.cooldowns[`${message.author.id}:${cmd.name}`],
         cmd.cooldown || 3000
       );
     }
