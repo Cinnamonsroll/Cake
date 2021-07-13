@@ -34,10 +34,10 @@ module.exports = {
           client.commands.filter((x) => x.category === parsing.toLowerCase())
         );
       else if (command) parsedData.push(command);
-      else if (subcommand) parsedData.push(subcommand);
+      else if (subcommand) parsedData.push({...subcommand, subname: parsing.toLowerCase()});
     }
     parsedData = parsedData.flat();
-    for (let parsedCommand of [...new Set(parsedData)]) {
+    for (let parsedCommand of parsedData) {
       try {
         client.commands = client.commands.filter(
           (x) => x.name !== parsedCommand.name
@@ -51,12 +51,12 @@ module.exports = {
           require(`../${parsedCommand.category}/${parsedCommand.name}.js`)
         );
         status.push({
-          command: parsedCommand.name,
+          command: `${parsedCommand.name} ${parsedCommand.subname ? `(${parsedCommand.subname})` : ""}`,
           status: client.messageEmojis.good,
         });
       } catch (err) {
         status.push({
-          command: parsedCommand.name,
+          command: `${parsedCommand.name} ${parsedCommand.subname ? `(${parsedCommand.subname})` : ""}`,
           status: `${client.messageEmojis.bad} ${err.message.replace(
             /(require(\s+)stack(:)([\s\S]*))?/gim,
             ""
