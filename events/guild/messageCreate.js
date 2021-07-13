@@ -107,7 +107,37 @@ module.exports = async (client, message) => {
       subCommand.args || [],
       message
     );
-    if (commandContext.message) subCommand.run(commandContext);
+    if (commandContext.message) {
+      if (
+        "cooldowns" in client.cakeCache &&
+        client.cakeCache.cooldowns[message.author.id] &&
+        client.cakeCache.cooldowns[message.author.id][subCommand.name]
+      ) {
+        let cooldownTime = (
+          (client.cakeCache.cooldowns[message.author.id][subCommand.name] +
+            (subCommand.cooldown || 3000) -
+            Date.now()) /
+          1000
+        ).toFixed(1);
+        return await message.create(`Please wait ${cooldownTime} seconds.`);
+      }
+      subCommand.run(commandContext);
+      let obj = {};
+      obj[subCommand.name] = Date.now();
+      client.cakeCache.set("cooldowns", {
+        type: "dict",
+        sub: {
+          name: message.author.id,
+          type: "custom",
+          value: obj,
+        },
+      });
+      setTimeout(
+        () =>
+          delete client.cakeCache.cooldowns[message.author.id][subCommand.name],
+        subCommand.cooldown || 3000
+      );
+    }
   } else {
     commandContext = await argSystem(
       client,
@@ -116,6 +146,35 @@ module.exports = async (client, message) => {
       cmd.args || [],
       message
     );
-    if (commandContext.message) cmd.run(commandContext);
+    if (commandContext.message) {
+      if (
+        "cooldowns" in client.cakeCache &&
+        client.cakeCache.cooldowns[message.author.id] &&
+        client.cakeCache.cooldowns[message.author.id][cmd.name]
+      ) {
+        let cooldownTime = (
+          (client.cakeCache.cooldowns[message.author.id][cmd.name] +
+            (cmd.cooldown || 3000) -
+            Date.now()) /
+          1000
+        ).toFixed(1);
+        return await message.create(`Please wait ${cooldownTime} seconds.`);
+      }
+      cmd.run(commandContext);
+      let obj = {};
+      obj[cmd.name] = Date.now();
+      client.cakeCache.set("cooldowns", {
+        type: "dict",
+        sub: {
+          name: message.author.id,
+          type: "custom",
+          value: obj,
+        },
+      });
+      setTimeout(
+        () => delete client.cakeCache.cooldowns[message.author.id][cmd.name],
+        cmd.cooldown || 3000
+      );
+    }
   }
 };

@@ -101,6 +101,14 @@ module.exports = class CakeMessage extends Discord.Message {
     let m = message;
     m.guild = this.guild;
     message = new this.constructor(this.client, m, this.channel);
+    this.client.cakeCache.set("messageMap", {
+      type: "dict",
+      sub: {
+        name: this.id,
+        type: "custom",
+        value: message,
+      },
+    });
     if (options.reactions) {
       for (let reaction of options.reactions) {
         await message.add_reaction(reaction.emoji);
