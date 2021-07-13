@@ -53,8 +53,8 @@ module.exports = async (client, interaction) => {
         edit,
         delete: deleteFunction
       };
-      if (client.cache.dropdowns && client.cache.dropdowns[bucket])
-        await client.cache.dropdowns[bucket]._onTimeout(custom_interaction);
+      if (client.cakeCache.dropdowns && client.cakeCache.dropdowns[bucket])
+        await client.cakeCache.dropdowns[bucket]._onTimeout(custom_interaction);
       return;
     } else {
       const bucket = `${interaction.message.channel_id}:${interaction.data.custom_id}`;
@@ -64,8 +64,8 @@ module.exports = async (client, interaction) => {
         edit,
         delete: deleteFunction
       };
-      if (client.cache.buttons && client.cache.buttons[bucket])
-        await client.cache.buttons[bucket]._onTimeout(custom_interaction);
+      if (client.cakeCache.buttons && client.cakeCache.buttons[bucket])
+        await client.cakeCache.buttons[bucket]._onTimeout(custom_interaction);
       return;
     }
   }

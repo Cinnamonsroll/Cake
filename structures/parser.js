@@ -14,7 +14,6 @@ module.exports = {
         check: button.check,
         fail: button.fail,
       };
-
       if (button.emoji) {
         let { id: emojiId, name: emojiName } = Discord.Util.parseEmoji(
           button.emoji

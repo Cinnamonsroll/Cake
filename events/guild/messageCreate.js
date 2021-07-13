@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const cakeMessage = require("../../structures/cakeMessage.js")
+const cakeMessage = require("../../structures/cakeMessage.js");
 const argSystem = require("../../structures/args.js");
 function permName(bitfield = 0) {
   for (let key in Discord.Permissions.FLAGS)
@@ -11,15 +11,25 @@ module.exports = async (client, message) => {
   m.guild = message.guild;
   m.author = message.author;
   message = new cakeMessage(client, m, message.channel);
+  client.cakeCache.add("messages", {
+    type: "dict",
+    front: true,
+    max: 9,
+    sub: {
+      name: message.channel.id,
+      type: "list",
+      value: message,
+    },
+  });
   if (!message.guild || message.author.bot || message.channel.type === "dm")
     return;
   let realPrefix = await client.getPrefixes(message.guild.id);
   await client.tags.cache(client, message, false);
-  let escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\\`]/g, "\\$&");
+  let escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\\`]/g, "\\$&");
   let prefixRegex = new RegExp(
     `^(<@!?${client.user.id}>|${
       Array.isArray(realPrefix) && realPrefix.length > 0
-        ? realPrefix.map(x => escapeRegex(x.prefix)).join("|")
+        ? realPrefix.map((x) => escapeRegex(x.prefix)).join("|")
         : realPrefix
     }|${client.user.username})`,
     "gi"
@@ -33,25 +43,25 @@ module.exports = async (client, message) => {
   let cmd = client.resolveCommand(command.toLowerCase());
   if (!cmd || (cmd.owner && !client.owners.includes(message.author.id))) return;
   const guildData = await client.guildDatabase.findOne({
-    guild: message.guild.id
+    guild: message.guild.id,
   });
   let commandContext = {
     client,
     Discord,
     message,
     prefix,
-    args
+    args,
   };
   if (cmd.permissions) {
     for (const bitfield of cmd.permissions.map(
-      x => Discord.Permissions.FLAGS[x]
+      (x) => Discord.Permissions.FLAGS[x]
     )) {
       if (!message.member.permissions.has(bitfield, true))
         return await message.create(
           `You are missing one of the following permissions ${cmd.permissions
-            .map(x => Discord.Permissions.FLAGS[x])
-            .filter(perm => !message.member.permissions.has(perm, true))
-            .map(perm => `\`${permName(perm)}\``)
+            .map((x) => Discord.Permissions.FLAGS[x])
+            .filter((perm) => !message.member.permissions.has(perm, true))
+            .map((perm) => `\`${permName(perm)}\``)
             .join(" | ")}`
         );
     }
@@ -72,20 +82,20 @@ module.exports = async (client, message) => {
     );
     if (!subCommand)
       return await message.create(
-        `Valid subcommands for the command \`${
-          cmd.name
-        }\` are ${cmd.subcommands.map(x => `\`${x.name}\``).join(" | ")}`
+        `Valid subcommands for the command \`${cmd.name}\` are ${cmd.subcommands
+          .map((x) => `\`${x.name}\``)
+          .join(" | ")}`
       );
     if (subCommand.permissions) {
       for (const bitfield of subCommand.permissions.map(
-        x => Discord.Permissions.FLAGS[x]
+        (x) => Discord.Permissions.FLAGS[x]
       )) {
         if (!message.member.permissions.has(bitfield, true))
           return await message.create(
             `You are missing one of the following permissions ${subCommand.permissions
-              .map(x => Discord.Permissions.FLAGS[x])
-              .filter(perm => !message.member.permissions.has(perm, true))
-              .map(perm => `\`${permName(perm)}\``)
+              .map((x) => Discord.Permissions.FLAGS[x])
+              .filter((perm) => !message.member.permissions.has(perm, true))
+              .map((perm) => `\`${permName(perm)}\``)
               .join(" | ")}`
           );
       }
@@ -97,16 +107,7 @@ module.exports = async (client, message) => {
       subCommand.args || [],
       message
     );
-    if (
-      Array.isArray(realPrefix) &&
-      realPrefix.length > 0 &&
-      realPrefix.find(x => x.prefix === prefix)
-    ) {
-      let prefixData = guildData.prefixes.find(x => x.prefix === prefix);
-      prefixData.uses++
-      await client.guildDatabase.updateOne({guild: message.guild.id}, {$set: guildData})
-      client.cache.prefix[`prefix.${message.guild.id}`] = guildData.prefixes;
-    }
+    if(commandContext.message) 
     subCommand.run(commandContext);
   } else {
     commandContext = await argSystem(
@@ -116,16 +117,6 @@ module.exports = async (client, message) => {
       cmd.args || [],
       message
     );
-    if (
-      Array.isArray(realPrefix) &&
-      realPrefix.length > 0 &&
-      realPrefix.find(x => x.prefix === prefix)
-    ) {
-      let prefixData = guildData.prefixes.find(x => x.prefix === prefix);
-      prefixData.uses++;
-      await client.guildDatabase.updateOne({guild: message.guild.id}, {$set: guildData})
-      client.cache.prefix[`prefix.${message.guild.id}`] = guildData.prefixes;
-    }
-    cmd.run(commandContext);
+    if(commandContext.message) cmd.run(commandContext);
   }
 };

@@ -4,6 +4,7 @@ let { parseButtons, parseDropdown } = require("./parser.js");
 module.exports = class CakeMessage extends Discord.Message {
   constructor(client, data, channel) {
     super(client, data, channel);
+    this.cache = client.cakeCache.messages?.[channel.id]
   }
   async delete() {
     if (this.deleted) return;

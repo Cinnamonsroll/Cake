@@ -70,11 +70,7 @@ module.exports = {
             ? prefixes
                 .map(
                   (x, i) =>
-                    `${i + 1}. **${x.prefix}** (${
-                      x.uses
-                    } uses) added ${require("moment")
-                      .utc(x.added)
-                      .fromNow()}\nby -> <@${x.adder}>`
+                    `${i + 1}. **${x.prefix}** added (<t:${Math.round(x.added / 1000)}:R>)\nby -> <@${x.adder}>`
                 )
                 .join("\n")
             : client.defaultPrefix
