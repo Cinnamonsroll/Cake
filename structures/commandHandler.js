@@ -1,16 +1,16 @@
 const { readdirSync } = require("fs");
 class CommandHandler {
   load(mainPath, subPaths, client) {
-    const load = dirs => {
-      const commands = readdirSync(`./${mainPath}/${dirs}/`).filter(x =>
+    const load = (dirs) => {
+      const commands = readdirSync(`./${mainPath}/${dirs}/`).filter((x) =>
         x.endsWith(".js")
       );
       for (let file of commands) {
-        let pull = require(`../${mainPath}/${dirs}/${file}`)
-        client.commands.push(pull)
+        let pull = require(`../${mainPath}/${dirs}/${file}`);
+        client.commands.push(pull);
       }
-    }
-    subPaths.map(x => load(x))
+    };
+    subPaths.map((x) => load(x));
   }
 }
-module.exports = CommandHandler
+module.exports = CommandHandler;

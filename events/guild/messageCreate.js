@@ -107,8 +107,7 @@ module.exports = async (client, message) => {
       subCommand.args || [],
       message
     );
-    if(commandContext.message) 
-    subCommand.run(commandContext);
+    if (commandContext.message) subCommand.run(commandContext);
   } else {
     commandContext = await argSystem(
       client,
@@ -117,6 +116,6 @@ module.exports = async (client, message) => {
       cmd.args || [],
       message
     );
-    if(commandContext.message) cmd.run(commandContext);
+    if (commandContext.message) cmd.run(commandContext);
   }
 };

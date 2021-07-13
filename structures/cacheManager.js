@@ -9,7 +9,11 @@ module.exports = class cakeCache {
       str: "",
       string: "",
     };
-    return type === "custom" ? type : Object.keys(types).includes(type) ? types[type] : undefined;
+    return type === "custom"
+      ? type
+      : Object.keys(types).includes(type)
+      ? types[type]
+      : undefined;
   }
   parseOptions(ops) {
     return {
@@ -27,7 +31,9 @@ module.exports = class cakeCache {
       if (options.sub.value) {
         let cache = this[name][options.sub.name];
         this[name][options.sub.name] = cache.slice(0, ops.max || 999);
-        this[name][options.sub.name][ops.front ? "unshift" : "push"](options.sub.value);
+        this[name][options.sub.name][ops.front ? "unshift" : "push"](
+          options.sub.value
+        );
       }
     }
     if (options.value) this[name].push(value);

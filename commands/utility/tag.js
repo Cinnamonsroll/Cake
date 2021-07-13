@@ -9,8 +9,8 @@ module.exports = {
     {
       question: "What tag are you trying to use?",
       type: "string",
-      key: "name"
-    }
+      key: "name",
+    },
   ],
   subcommands: [
     {
@@ -22,14 +22,14 @@ module.exports = {
         {
           question: "What do you want the name of the tag to be?",
           type: "string",
-          key: "name"
+          key: "name",
         },
         {
           question: "What do you want the content of the tag to be?",
           type: "string",
           key: "content",
-          joined: true
-        }
+          joined: true,
+        },
       ],
       run: async ({ name, content, client, message }) => {
         let tag = await client.tags.findTag(client, name, message.guild.id);
@@ -40,8 +40,10 @@ module.exports = {
         if (
           client
             .resolveCommand("tag")
-            .subcommands
-            .map(x => [...x.aliases.map(y => y.toLowerCase()), x.name.toLowerCase()])
+            .subcommands.map((x) => [
+              ...x.aliases.map((y) => y.toLowerCase()),
+              x.name.toLowerCase(),
+            ])
             .includes(name)
         )
           return await message.create(
@@ -53,7 +55,7 @@ module.exports = {
           `${client.messageEmojis.good} Tag created`,
           { reply: message.id }
         );
-      }
+      },
     },
     {
       name: "list",
@@ -63,29 +65,29 @@ module.exports = {
         let tags = await client.tags.getTags(message);
         if (!tags.length)
           return await message.create("This guild has no tags", {
-            reply: message.id
+            reply: message.id,
           });
         tags = Array.from(
           {
-            length: Math.ceil(tags.length / 10)
+            length: Math.ceil(tags.length / 10),
           },
           (a, r) => tags.slice(r * 10, r * 10 + 10)
         );
-        tags = tags.map(data => ({
+        tags = tags.map((data) => ({
           color: Number("0x" + client.color.slice(1)),
           author: {
             name: "Tags",
             url: client.user.avatarURL({ format: "png" }),
-            iconURL: client.user.avatarURL({ format: "png" })
+            iconURL: client.user.avatarURL({ format: "png" }),
           },
-          description: `${data.map(da => `\`${da.name}\``).join(" | ")}`
+          description: `${data.map((da) => `\`${da.name}\``).join(" | ")}`,
         }));
         await client.pagination(message, {
           embeds: tags,
           dropdown: tags.slice(0, 25),
-          page: true
+          page: true,
         });
-      }
+      },
     },
     {
       name: "delete",
@@ -95,8 +97,8 @@ module.exports = {
         {
           question: "What tag are you delete?",
           type: "string",
-          key: "name"
-        }
+          key: "name",
+        },
       ],
       run: async ({ name, client, message }) => {
         let tag = await client.tags.findTag(client, name, message.guild.id);
@@ -105,7 +107,10 @@ module.exports = {
             `${client.messageEmojis.bad} Tag not found`,
             { reply: message.id }
           );
-        if (tag.owner !== message.author.id && !client.owners.includes(message.author.id))
+        if (
+          tag.owner !== message.author.id &&
+          !client.owners.includes(message.author.id)
+        )
           return await message.create(
             `${client.messageEmojis.bad} You do not own this tag`,
             { reply: message.id }
@@ -117,33 +122,33 @@ module.exports = {
               style: "success",
               label: "Yes",
               id: "yes",
-              check: u => u.id == message.author.id,
+              check: (u) => u.id == message.author.id,
               fail: () => {
                 return;
               },
-              callback: async interaction => {
+              callback: async (interaction) => {
                 await client.tags.deleteTag(client, tag, message);
                 await interaction.delete();
                 return await interaction.respond(
                   `${client.messageEmojis.good} Tag deleted`
                 );
-              }
+              },
             },
             {
               style: "danger",
               label: "No",
               id: "no",
-              check: u => u.id == message.author.id,
+              check: (u) => u.id == message.author.id,
               fail: () => {
                 return;
               },
-              callback: async interaction => {
+              callback: async (interaction) => {
                 return await interaction.delete();
-              }
-            }
-          ]
+              },
+            },
+          ],
         });
-      }
+      },
     },
     {
       name: "edit",
@@ -154,14 +159,14 @@ module.exports = {
         {
           question: "What tag are you editing?",
           type: "string",
-          key: "name"
+          key: "name",
         },
         {
           question: "What do you want the new content to be",
           type: "string",
           key: "content",
-          joined: true
-        }
+          joined: true,
+        },
       ],
       run: async ({ name, content, client, message }) => {
         let tag = await client.tags.findTag(client, name, message.guild.id);
@@ -169,7 +174,7 @@ module.exports = {
           return await message.create(
             `${client.messageEmojis.bad} Tag not found`,
             {
-              reply: message.id
+              reply: message.id,
             }
           );
         if (tag.owner !== message.author.id)
@@ -181,10 +186,10 @@ module.exports = {
         return await message.create(
           `${client.messageEmojis.good} Tag updated`,
           {
-            reply: message.id
+            reply: message.id,
           }
         );
-      }
+      },
     },
     {
       name: "alias",
@@ -194,13 +199,13 @@ module.exports = {
         {
           question: "What tag are you editing?",
           type: "string",
-          key: "name"
+          key: "name",
         },
         {
           question: "What alias do you want to add?",
           type: "string",
-          key: "alias"
-        }
+          key: "alias",
+        },
       ],
       run: async ({ name, alias, client, message }) => {
         let tag = await client.tags.findTag(client, name, message.guild.id);
@@ -208,7 +213,7 @@ module.exports = {
           return await message.create(
             `${client.messageEmojis.bad} Tag not found`,
             {
-              reply: message.id
+              reply: message.id,
             }
           );
         if (tag.owner !== message.author.id)
@@ -220,10 +225,10 @@ module.exports = {
         return await message.create(
           `${client.messageEmojis.good} Alias added`,
           {
-            reply: message.id
+            reply: message.id,
           }
         );
-      }
+      },
     },
     {
       name: "meta",
@@ -233,8 +238,8 @@ module.exports = {
         {
           question: "What tag would you like to get information on ?",
           type: "string",
-          key: "name"
-        }
+          key: "name",
+        },
       ],
       run: async ({ name, client, message }) => {
         let tag = await client.tags.findTag(client, name, message.guild.id);
@@ -242,26 +247,26 @@ module.exports = {
           return await message.create(
             `${client.messageEmojis.bad} Tag not found`,
             {
-              reply: message.id
+              reply: message.id,
             }
           );
         tag.owner = message.guild.members.cache.get(tag.owner).user.tag;
-        tag.date = require("moment")
-          .utc(tag.date)
-          .fromNow();
+        tag.date = require("moment").utc(tag.date).fromNow();
         return await message.create(
           `${Object.entries(tag)
             .map(
               ([K, V]) =>
-                `${K.toLowerCase().replace(/\b\w/gim, v => v.toUpperCase())}: ${
+                `${K.toLowerCase().replace(/\b\w/gim, (v) =>
+                  v.toUpperCase()
+                )}: ${
                   Array.isArray(V)
-                    ? V.map(x => `\`${x}\``).join(" | ") || "None"
+                    ? V.map((x) => `\`${x}\``).join(" | ") || "None"
                     : V
                 }`
             )
             .join("\n")}`
         );
-      }
+      },
     },
     {
       name: "rename",
@@ -271,13 +276,13 @@ module.exports = {
         {
           question: "What tag are you renaming?",
           type: "string",
-          key: "name"
+          key: "name",
         },
         {
           question: "What do you want the new name to be?",
           type: "string",
-          key: "newName"
-        }
+          key: "newName",
+        },
       ],
       run: async ({ name, newName, client, message }) => {
         let tag = await client.tags.findTag(client, name, message.guild.id);
@@ -285,7 +290,7 @@ module.exports = {
           return await message.create(
             `${client.messageEmojis.bad} Tag not found`,
             {
-              reply: message.id
+              reply: message.id,
             }
           );
         if (tag.owner !== message.author.id)
@@ -297,20 +302,20 @@ module.exports = {
         return await message.create(
           `${client.messageEmojis.good} Tag renamed`,
           {
-            reply: message.id
+            reply: message.id,
           }
         );
-      }
-    }
+      },
+    },
   ],
   run: async ({ name, client, message }) => {
     let tag = await client.tags.findTag(client, name, message.guild.id);
     if (!tag)
       return await message.create(`${client.messageEmojis.bad} Tag not found`, {
-        reply: message.id
+        reply: message.id,
       });
     return await message.create(tag.content, {
-      reply: message.id
+      reply: message.id,
     });
-  }
+  },
 };

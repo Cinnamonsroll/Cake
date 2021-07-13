@@ -42,6 +42,8 @@ module.exports = {
             custom_id: dropdown.id,
             disabled: !!dropdown.useable,
             callback: dropdown.callback,
+            min_value: dropdown.min_value ?? 0,
+            max_value: dropdown.max_value ?? 1,
             check: dropdown.check,
             fail: dropdown.fail,
             placeholder: dropdown.placeholder,

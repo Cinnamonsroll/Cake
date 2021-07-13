@@ -8,9 +8,9 @@ module.exports = async (client, interaction) => {
           flags: options.emp ? 64 : 0,
           content: content || "",
           embeds: options.embed ? [options.embed] : [],
-          components: options.components || []
-        }
-      }
+          components: options.components || [],
+        },
+      },
     });
   }
   function deleteFunction() {
@@ -22,14 +22,14 @@ module.exports = async (client, interaction) => {
   function edit(content, options = {}) {
     let data = {
       content: content,
-      embeds: options.embed ? [options.embed] : []
+      embeds: options.embed ? [options.embed] : [],
     };
     if (options.components) data.components = options.components;
     if (options.dropdown) {
       let components = options.dropdown.components;
       components
-        .find(row => row.components.find(item => item.type === 3))
-        .components.find(item => item.type == 3).options =
+        .find((row) => row.components.find((item) => item.type === 3))
+        .components.find((item) => item.type == 3).options =
         options.dropdown.options;
       data.components = components;
     }
@@ -37,7 +37,7 @@ module.exports = async (client, interaction) => {
       .channels(interaction.channel_id)
       .messages(interaction.message.id)
       .patch({
-        data
+        data,
       });
     client.api
       .interactions(interaction.id)
@@ -51,7 +51,7 @@ module.exports = async (client, interaction) => {
         respond,
         args: interaction.data.values,
         edit,
-        delete: deleteFunction
+        delete: deleteFunction,
       };
       if (client.cakeCache.dropdowns && client.cakeCache.dropdowns[bucket])
         await client.cakeCache.dropdowns[bucket]._onTimeout(custom_interaction);
@@ -62,7 +62,7 @@ module.exports = async (client, interaction) => {
         ...interaction,
         respond,
         edit,
-        delete: deleteFunction
+        delete: deleteFunction,
       };
       if (client.cakeCache.buttons && client.cakeCache.buttons[bucket])
         await client.cakeCache.buttons[bucket]._onTimeout(custom_interaction);
@@ -77,7 +77,7 @@ module.exports = async (client, interaction) => {
     args,
     edit,
     prefix: await client.getPrefixes(interaction.guild_id),
-    user: interaction.member
+    user: interaction.member,
   };
   if (args) {
     for (let i = 0; i < args.length; i++) {

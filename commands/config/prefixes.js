@@ -16,12 +16,12 @@ module.exports = {
           question: "What prefix do you want to delete?",
           type: "string",
           key: "prefix",
-          joined: true
-        }
+          joined: true,
+        },
       ],
       run: async ({ message, client, prefix }) => {
         const guildData = await client.guildDatabase.findOne({
-          guild: message.guild.id
+          guild: message.guild.id,
         });
         if (!client.prefixes.validate(guildData, prefix))
           return await message.create("Prefix doesn't exists");
@@ -29,7 +29,7 @@ module.exports = {
         await client
           .resolveCommand("prefixes")
           .run({ message, client, reason: `Remove prefix: ${prefix}` });
-      }
+      },
     },
     {
       name: "add",
@@ -40,19 +40,19 @@ module.exports = {
           question: "What prefix do you want to add?",
           type: "string",
           key: "prefix",
-          joined: true
-        }
+          joined: true,
+        },
       ],
       run: async ({ message, client, prefix }) => {
         const guildData = await client.guildDatabase.findOne({
-          guild: message.guild.id
+          guild: message.guild.id,
         });
         if (client.prefixes.validate(guildData, prefix))
           return await message.create("Prefix already exists");
         await client.prefixes.create(guildData, client, message, prefix);
         await client.resolveCommand("prefixes").run({ message, client });
-      }
-    }
+      },
+    },
   ],
   run: async ({ message, client, reason }) => {
     let prefixes = await client.getPrefixes(message.guild.id);
@@ -61,7 +61,7 @@ module.exports = {
         author: {
           name: message.author.tag,
           url: `https://discord.com/users/${message.member.id}`,
-          icon_url: message.author.displayAvatarURL()
+          icon_url: message.author.displayAvatarURL(),
         },
         color: Number("0x" + client.color.slice(1)),
         title: `${reason ?? "Showing prefixes"}`,
@@ -70,11 +70,13 @@ module.exports = {
             ? prefixes
                 .map(
                   (x, i) =>
-                    `${i + 1}. **${x.prefix}** added (<t:${Math.round(x.added / 1000)}:R>)\nby -> <@${x.adder}>`
+                    `${i + 1}. **${x.prefix}** added (<t:${Math.round(
+                      x.added / 1000
+                    )}:R>)\nby -> <@${x.adder}>`
                 )
                 .join("\n")
-            : client.defaultPrefix
-      }
+            : client.defaultPrefix,
+      },
     });
-  }
+  },
 };

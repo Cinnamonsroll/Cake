@@ -1,8 +1,8 @@
 const { readdirSync } = require("fs");
 class EventHandler {
   load(mainPath, subPaths, client) {
-    const load = dirs => {
-      const events = readdirSync(`./${mainPath}/${dirs}/`).filter(x =>
+    const load = (dirs) => {
+      const events = readdirSync(`./${mainPath}/${dirs}/`).filter((x) =>
         x.endsWith(".js")
       );
       for (let file of events) {
@@ -10,16 +10,16 @@ class EventHandler {
           let evt = require(`../${mainPath}/${dirs}/${file}`);
           let eName = file.split(".")[0];
           client.ws.on(eName, evt.bind(null, client));
-          console.log(`[Websocket event] ${eName} loaded!`)
+          console.log(`[Websocket event] ${eName} loaded!`);
         } else {
           let evt = require(`../${mainPath}/${dirs}/${file}`);
           let eName = file.split(".")[0];
           client.on(eName, evt.bind(null, client));
-          console.log(`[Event] ${eName} loaded!`)
+          console.log(`[Event] ${eName} loaded!`);
         }
       }
     };
-    subPaths.map(x => load(x));
+    subPaths.map((x) => load(x));
   }
 }
 module.exports = EventHandler;

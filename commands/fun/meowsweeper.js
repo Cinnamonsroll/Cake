@@ -9,13 +9,13 @@ module.exports = {
     let flagging = false;
     let numbers = ["0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"];
     let positionMatch = (a, b) => a.x === b.x && a.y === b.y;
-    let randomNumber = size => Math.floor(Math.random() * size);
+    let randomNumber = (size) => Math.floor(Math.random() * size);
     let generateMines = (boardSize, mines) => {
       let positions = [];
       while (positions.length <= mines) {
         const position = {
           x: randomNumber(boardSize),
-          y: randomNumber(boardSize)
+          y: randomNumber(boardSize),
         };
 
         if (!positions.some(positionMatch.bind(null, position))) {
@@ -33,9 +33,9 @@ module.exports = {
           if (tile) tiles.push(tile);
         }
       }
-      return tiles.filter(x => x && x.mine);
+      return tiles.filter((x) => x && x.mine);
     }
-    let generateBoard = s => {
+    let generateBoard = (s) => {
       let board = [];
       for (let x = 0; x < s; x++) {
         const row = [];
@@ -44,7 +44,7 @@ module.exports = {
             mine: minePositions.some(positionMatch.bind(null, { x, y })),
             flagged: false,
             x,
-            y
+            y,
           });
         }
         board.push(row);
@@ -52,20 +52,20 @@ module.exports = {
       return board;
     };
     let board = generateBoard(5);
-    board.map(x =>
-      x.map(y => (y.number = numbers[nearbyTiles(board, y).length]))
+    board.map((x) =>
+      x.map((y) => (y.number = numbers[nearbyTiles(board, y).length]))
     );
-    let findTile = id => {
+    let findTile = (id) => {
       return board
-        .find(x =>
+        .find((x) =>
           x.find(
-            y =>
+            (y) =>
               y.x === parseInt(id.split("|")[0]) &&
               y.y === parseInt(id.split("|")[1])
           )
         )
         .find(
-          y =>
+          (y) =>
             y.x === parseInt(id.split("|")[0]) &&
             y.y === parseInt(id.split("|")[1])
         );
@@ -79,35 +79,34 @@ module.exports = {
             label: "",
             emoji: "🐱",
             id: `${x}|${y}`,
-            check: u => u.id === message.member.id,
-            fail: _ => {
+            check: (u) => u.id === message.member.id,
+            fail: (_) => {
               return;
             },
-            callback: async interaction => {
+            callback: async (interaction) => {
               let tile = findTile(interaction.data.custom_id);
               if (flagging && !tile.flagged) {
                 tile.flagged = !tile.flagged;
-                interaction.message.components = interaction.message.components.map(
-                  x => ({
+                interaction.message.components =
+                  interaction.message.components.map((x) => ({
                     type: 1,
-                    components: x.components.map(y =>
+                    components: x.components.map((y) =>
                       y.custom_id === interaction.data.custom_id
                         ? {
                             style: 1,
                             type: 2,
                             emoji: {
                               name: "🚩",
-                              id: null
+                              id: null,
                             },
-                            custom_id: interaction.data.custom_id
+                            custom_id: interaction.data.custom_id,
                           }
                         : y
-                    )
-                  })
-                );
+                    ),
+                  }));
               } else if (tile.mine) {
-                interaction.message.components = interaction.message.components.map(
-                  (x, i) => ({
+                interaction.message.components =
+                  interaction.message.components.map((x, i) => ({
                     type: 1,
                     components: x.components.map((y, j) => ({
                       style: findTile(y.custom_id).mine ? 4 : 3,
@@ -116,33 +115,31 @@ module.exports = {
                         id: null,
                         name: findTile(y.custom_id).mine
                           ? "💣"
-                          : findTile(y.custom_id).number
+                          : findTile(y.custom_id).number,
                       },
                       custom_id: interaction.data.custom_id,
-                      disabled: true
-                    }))
-                  })
-                );
+                      disabled: true,
+                    })),
+                  }));
               } else {
-                interaction.message.components = interaction.message.components.map(
-                  x => ({
+                interaction.message.components =
+                  interaction.message.components.map((x) => ({
                     type: 1,
-                    components: x.components.map(y =>
+                    components: x.components.map((y) =>
                       y.custom_id === interaction.data.custom_id
                         ? {
                             style: tile.mine ? 4 : 3,
                             type: 2,
                             emoji: {
                               name: tile.number,
-                              id: null
+                              id: null,
                             },
                             custom_id: interaction.data.custom_id,
-                            disabled: true
+                            disabled: true,
                           }
                         : y
-                    )
-                  })
-                );
+                    ),
+                  }));
               }
 
               interaction.edit(
@@ -150,10 +147,10 @@ module.exports = {
                   client.messageEmojis[flagging ? "good" : "bad"]
                 }`,
                 {
-                  components: interaction.message.components
+                  components: interaction.message.components,
                 }
               );
-            }
+            },
           });
         }
       }
@@ -169,8 +166,8 @@ module.exports = {
         reactions: [
           {
             emoji: "🚩",
-            check: u => u.id === message.member.id,
-            callback: msg => {
+            check: (u) => u.id === message.member.id,
+            callback: (msg) => {
               flagging = !flagging;
               msg.edit(
                 `Meowsweeper\nFlagging: ${
@@ -178,10 +175,10 @@ module.exports = {
                 }`,
                 { components: msg.components }
               );
-            }
-          }
-        ]
+            },
+          },
+        ],
       }
     );
-  }
+  },
 };
