@@ -14,7 +14,7 @@ module.exports = {
       time: 60000,
     },
   ],
-  run: async ({ client, message, command }) => {
+  run: async ({ client, message, command, editedMessage }) => {
     let parsedData = [],
       status = [];
     for (let parsing of command.split(" ")) {
@@ -83,6 +83,7 @@ module.exports = {
     await client.pagination(message, {
       embeds: status,
       dropdown: status.slice(0, 25),
+      editedMessage
     });
   },
 };

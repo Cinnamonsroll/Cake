@@ -19,7 +19,7 @@ module.exports = {
           joined: true,
         },
       ],
-      run: async ({ message, client, prefix }) => {
+      run: async ({ message, client, prefix, editedMessage }) => {
         const guildData = await client.guildDatabase.findOne({
           guild: message.guild.id,
         });
@@ -28,7 +28,7 @@ module.exports = {
         await client.prefixes.remove(guildData, client, message, prefix);
         await client
           .resolveCommand("prefixes")
-          .run({ message, client, reason: `Remove prefix: ${prefix}` });
+          .run({ message, client, reason: `Remove prefix: ${prefix}`, editedMessage });
       },
     },
     {
@@ -43,18 +43,18 @@ module.exports = {
           joined: true,
         },
       ],
-      run: async ({ message, client, prefix }) => {
+      run: async ({ message, client, prefix, editedMessage }) => {
         const guildData = await client.guildDatabase.findOne({
           guild: message.guild.id,
         });
         if (client.prefixes.validate(guildData, prefix))
-          return await message.create("Prefix already exists");
+          return await message.create("Prefix already exists", editedMessage);
         await client.prefixes.create(guildData, client, message, prefix);
-        await client.resolveCommand("prefixes").run({ message, client });
+        await client.resolveCommand("prefixes").run({ message, client, editedMessage });
       },
     },
   ],
-  run: async ({ message, client, reason }) => {
+  run: async ({ message, client, reason, editedMessage }) => {
     let prefixes = await client.getPrefixes(message.guild.id);
     await message.create("", {
       embed: {
@@ -76,7 +76,7 @@ module.exports = {
                 )
                 .join("\n")
             : client.defaultPrefix,
-      },
+      }, editedMessage
     });
   },
 };

@@ -31,11 +31,12 @@ module.exports = {
           joined: true,
         },
       ],
-      run: async ({ name, content, client, message }) => {
+      run: async ({ name, content, client, message, editedMessage }) => {
         let tag = await client.tags.findTag(client, name, message.guild.id);
         if (tag)
           return await message.create(
-            `${client.messageEmojis.bad} Tag already exists`
+            `${client.messageEmojis.bad} Tag already exists`,
+            {reply: message.id, editedMessage}
           );
         if (
           [
@@ -59,12 +60,12 @@ module.exports = {
         )
           return await message.create(
             `${client.messageEmojis.bad} Reserved tag name entered`,
-            { reply: message.id }
+            { reply: message.id, editedMessage }
           );
         await client.tags.createTag(client, name, content, message);
         return await message.create(
           `${client.messageEmojis.good} Tag created`,
-          { reply: message.id }
+          { reply: message.id, editedMessage }
         );
       },
     },
@@ -77,6 +78,7 @@ module.exports = {
         if (!tags.length)
           return await message.create("This guild has no tags", {
             reply: message.id,
+            editedMessage
           });
         tags = Array.from(
           {
@@ -97,6 +99,7 @@ module.exports = {
           embeds: tags,
           dropdown: tags.slice(0, 25),
           page: true,
+          editedMessage
         });
       },
     },
@@ -111,12 +114,12 @@ module.exports = {
           key: "name",
         },
       ],
-      run: async ({ name, client, message }) => {
+      run: async ({ name, client, message, editedMessage }) => {
         let tag = await client.tags.findTag(client, name, message.guild.id);
         if (!tag)
           return await message.create(
             `${client.messageEmojis.bad} Tag not found`,
-            { reply: message.id }
+            { reply: message.id, editedMessage }
           );
         if (
           tag.owner !== message.author.id &&
@@ -124,10 +127,11 @@ module.exports = {
         )
           return await message.create(
             `${client.messageEmojis.bad} You do not own this tag`,
-            { reply: message.id }
+            { reply: message.id, editedMessage }
           );
         await message.create("Are you sure you want to delete this tag?", {
           reply: message.id,
+          editedMessage,
           buttons: [
             {
               style: "success",
@@ -179,25 +183,27 @@ module.exports = {
           joined: true,
         },
       ],
-      run: async ({ name, content, client, message }) => {
+      run: async ({ name, content, client, message, editedMessage }) => {
         let tag = await client.tags.findTag(client, name, message.guild.id);
         if (!tag)
           return await message.create(
             `${client.messageEmojis.bad} Tag not found`,
             {
               reply: message.id,
+              editedMessage
             }
           );
         if (tag.owner !== message.author.id)
           return await message.create(
             `${client.messageEmojis.bad} You do not own this tag`,
-            { reply: message.id }
+            { reply: message.id, editedMessage }
           );
         await client.tags.editTag(client, name, content, tag, message);
         return await message.create(
           `${client.messageEmojis.good} Tag updated`,
           {
             reply: message.id,
+            editedMessage
           }
         );
       },
@@ -218,25 +224,27 @@ module.exports = {
           key: "alias",
         },
       ],
-      run: async ({ name, alias, client, message }) => {
+      run: async ({ name, alias, client, message, editedMessage }) => {
         let tag = await client.tags.findTag(client, name, message.guild.id);
         if (!tag)
           return await message.create(
             `${client.messageEmojis.bad} Tag not found`,
             {
               reply: message.id,
+              editedMessage
             }
           );
         if (tag.owner !== message.author.id)
           return await message.create(
             `${client.messageEmojis.bad} You do not own this tag`,
-            { reply: message.id }
+            { reply: message.id, editedMessage }
           );
         await client.tags.addAlias(client, name, alias, tag, message);
         return await message.create(
           `${client.messageEmojis.good} Alias added`,
           {
             reply: message.id,
+            editedMessage
           }
         );
       },
@@ -252,13 +260,14 @@ module.exports = {
           key: "name",
         },
       ],
-      run: async ({ name, client, message }) => {
+      run: async ({ name, client, message, editedMessage }) => {
         let tag = await client.tags.findTag(client, name, message.guild.id);
         if (!tag)
           return await message.create(
             `${client.messageEmojis.bad} Tag not found`,
             {
               reply: message.id,
+              editedMessage
             }
           );
         tag.owner = message.guild.members.cache.get(tag.owner).user.tag;
@@ -275,8 +284,7 @@ module.exports = {
                     : V
                 }`
             )
-            .join("\n")}`
-        );
+            .join("\n")}`, {reply: message.id, editedMessage});
       },
     },
     {
@@ -295,19 +303,20 @@ module.exports = {
           key: "newName",
         },
       ],
-      run: async ({ name, newName, client, message }) => {
+      run: async ({ name, newName, client, message, editedMessage }) => {
         let tag = await client.tags.findTag(client, name, message.guild.id);
         if (!tag)
           return await message.create(
             `${client.messageEmojis.bad} Tag not found`,
             {
               reply: message.id,
+              editedMessage
             }
           );
         if (tag.owner !== message.author.id)
           return await message.create(
             `${client.messageEmojis.bad} You do not own this tag`,
-            { reply: message.id }
+            { reply: message.id, editedMessage }
           );
           if (
             [
@@ -331,26 +340,29 @@ module.exports = {
           )
             return await message.create(
               `${client.messageEmojis.bad} Reserved tag name entered`,
-              { reply: message.id }
+              { reply: message.id, editedMessage }
             );
         await client.tags.renameTag(client, name, newName, tag, message);
         return await message.create(
           `${client.messageEmojis.good} Tag renamed`,
           {
             reply: message.id,
+            editedMessage
           }
         );
       },
     },
   ],
-  run: async ({ name, client, message }) => {
+  run: async ({ name, client, message, editedMessage }) => {
     let tag = await client.tags.findTag(client, name, message.guild.id);
     if (!tag)
       return await message.create(`${client.messageEmojis.bad} Tag not found`, {
         reply: message.id,
+        editedMessage
       });
     return await message.create(tag.content, {
       reply: message.id,
+      editedMessage
     });
   },
 };

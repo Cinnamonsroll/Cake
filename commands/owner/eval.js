@@ -14,7 +14,7 @@ module.exports = {
       time: 60000,
     },
   ],
-  run: async ({ client, message, evalCode, prefix }) => {
+  run: async ({ client, message, evalCode, prefix, editedMessage }) => {
     let { inspect } = require("util"),
       { Type } = require("@sapphire/type"),
       coolThings = new (require("string-toolkit"))().parseOptions(
@@ -54,6 +54,7 @@ module.exports = {
         embeds: evalEmbeds,
         dropdown: evalEmbeds.slice(0, 25),
         page: true,
+        editedMessage
       });
     } catch (err) {
       return message.create("", {
@@ -66,6 +67,7 @@ module.exports = {
           )}\`\`\``,
         },
         reply: message.id,
+        editedMessage
       });
     }
   },

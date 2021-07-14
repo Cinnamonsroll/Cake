@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 const argSystem = require("../../structures/args.js");
-module.exports = async (client, message) => {
+module.exports = async (client, message, editedMessage) => {
   message = client.handleMessage(message);
   if (!message.guild || message.author.bot || message.channel.type === "dm")
     return;
@@ -54,6 +54,7 @@ module.exports = async (client, message) => {
     Discord,
     message,
     prefix,
+    editedMessage,
     args,
   };
   let subCommand =

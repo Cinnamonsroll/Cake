@@ -5,7 +5,7 @@ module.exports = {
   owner: false,
   category: "fun",
   aliases: ["minesweeper"],
-  run: async ({ client, message }) => {
+  run: async ({ client, message, editedMessage }) => {
     let flagging = false;
     let numbers = ["0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"];
     let positionMatch = (a, b) => a.x === b.x && a.y === b.y;
@@ -162,6 +162,7 @@ module.exports = {
         client.messageEmojis[flagging ? "good" : "bad"]
       }`,
       {
+        editedMessage,
         buttons: generateButtons(),
         reactions: [
           {

@@ -12,9 +12,9 @@ module.exports = {
       key: "user",
     },
   ],
-  run: async ({ message, user }) => {
+  run: async ({ message, user, editedMessage }) => {
     if (!user || user.id === message.member.id || user.bot)
-      return await message.create("Please include a valid user");
+      return await message.create("Please include a valid user", {editedMessage});
     let board = [0, 0, 0, 0, 0, 0, 0, 0, 0],
       players = [
         {
@@ -28,6 +28,7 @@ module.exports = {
     await message.create(
       `${message.member} would like to play a game of tictactoe against you, do you accept?`,
       {
+        editedMessage,
         buttons: [
           {
             label: "Accept",
@@ -162,6 +163,7 @@ module.exports = {
         },
       }));
       await message.create(`It is ${players[player].member}\'s turn`, {
+        editedMessage,
         buttons: [
           ...buttons,
           {

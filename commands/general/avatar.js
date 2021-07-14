@@ -13,7 +13,7 @@ module.exports = {
       key: "user",
     },
   ],
-  run: async ({ message, user, client }) => {
+  run: async ({ message, user, client, editedMessage }) => {
     let avatarURL = (size, format, dynamic) => {
       return user.user.avatarURL({
         size: size === "Direct" ? 1024 : size,
@@ -45,6 +45,7 @@ module.exports = {
     await client.pagination(message, {
       embeds: avatarEmbeds,
       dropdown: types,
+      editedMessage
     });
   },
 };

@@ -84,6 +84,12 @@ module.exports = class CakeMessage extends Discord.Message {
           dropdowns.length ? { type: 1, components: dropdowns } : undefined,
         ]
       : [];
+    if (options.editedMessage)
+      return await options.editedMessage.edit(content ?? "\u200b", {
+        ...options,
+        embed: options.embed ?? {},
+        components: options.components || components.filter((x) => x) || [],
+      });
     let message = await this.client
       .request("POST", `/channels/${this.channel.id}/messages`, {
         content: (String(content) || "").slice(0, 2000),
@@ -101,7 +107,7 @@ module.exports = class CakeMessage extends Discord.Message {
     let m = message;
     m.guild = this.guild;
     message = new this.constructor(this.client, m, this.channel);
-    this.client.cakeCache.set("messageMap", {
+    if (!options.editedMessage) this.client.cakeCache.set("messageMap", {
       type: "dict",
       sub: {
         name: this.id,

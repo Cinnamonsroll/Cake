@@ -13,9 +13,11 @@ module.exports = {
       ws: { ping },
     },
     message,
+    editedMessage
   }) => {
     message.create(`Pong! \`${ping}\`ms`, {
       reply: message.id,
+      editedMessage
     });
   },
 };

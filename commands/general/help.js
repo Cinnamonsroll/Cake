@@ -145,7 +145,7 @@ module.exports = {
       });
     }
   },
-  run: async ({ message, client, realPrefix, args }) => {
+  run: async ({ message, client, realPrefix, args, editedMessage }) => {
     String.prototype.toProperCase = function () {
       return this.toLowerCase().replace(/\b\w/gi, (w) => w.toUpperCase());
     };
@@ -166,7 +166,7 @@ module.exports = {
                 .join(", "),
             },
           ],
-        },
+        }, editedMessage
       });
     } else if (
       args[0] &&
@@ -199,7 +199,7 @@ module.exports = {
           description: subCommand.description,
           color: Number("0x" + client.color.slice(1)),
           fields,
-        },
+        }, editedMessage
       });
     } else if (args[0] && client.resolveCommand(args[0].toLowerCase())) {
       let command = client.resolveCommand(args[0].toLowerCase());
@@ -229,6 +229,7 @@ module.exports = {
           color: Number("0x" + client.color.slice(1)),
           fields,
         },
+        editedMessage
       });
     } else {
       return await message.create("", {
@@ -248,6 +249,7 @@ module.exports = {
             },
           ],
         },
+        editedMessage
       });
     }
   },

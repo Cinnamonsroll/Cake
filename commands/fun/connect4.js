@@ -12,9 +12,9 @@ module.exports = {
       key: "user",
     },
   ],
-  run: async ({ message, user }) => {
+  run: async ({ message, user, editedMessage }) => {
     if (!user || user.id === message.member.id || user.bot)
-      return await message.create("Please include a valid user");
+      return await message.create("Please include a valid user", {editedMessage});
     let numbers = {
       array: ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣"],
       get string() {
@@ -46,6 +46,7 @@ module.exports = {
     await message.create(
       `${message.member} would like to play a game of connect 4 against you, do you accept?`,
       {
+        editedMessage,
         buttons: [
           {
             label: "Accept",
@@ -304,6 +305,7 @@ module.exports = {
           board
         )}`,
         {
+          editedMessage,
           buttons: Array.from({ length: 7 }, (_, i) => ({
             style: "primary",
             id: `${i}`,

@@ -6,7 +6,7 @@ function permName(bitfield = 0) {
     if (Discord.Permissions.FLAGS[key] == bitfield) return key;
   return null;
 }
-module.exports = class baseClient extends Client {
+module.exports = class cakeClient extends Client {
   constructor(defaultPrefix, owners, baseOptions) {
     super(baseOptions);
     this.defaultPrefix = defaultPrefix;
