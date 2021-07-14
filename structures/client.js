@@ -1,5 +1,11 @@
 let { Client } = require("discord.js");
+let Discord = require("discord.js")
 const cakeMessage = require("./cakeMessage.js");
+function permName(bitfield = 0) {
+  for (let key in Discord.Permissions.FLAGS)
+    if (Discord.Permissions.FLAGS[key] == bitfield) return key;
+  return null;
+}
 module.exports = class baseClient extends Client {
   constructor(defaultPrefix, owners, baseOptions) {
     super(baseOptions);
@@ -75,6 +81,16 @@ module.exports = class baseClient extends Client {
         }, 900000),
       },
     });
+  }
+  permissions(message, perms){
+    for (const bitfield of perms.map((x) => Discord.Permissions.FLAGS[x])) {
+      if (!message.member.permissions.has(bitfield, true))
+        return `You are missing one of the following permissions ${perms
+          .map((x) => Discord.Permissions.FLAGS[x])
+          .filter((perm) => !message.member.permissions.has(perm, true))
+          .map((perm) => `\`${permName(perm)}\``)
+          .join(" | ")}`;
+    }
   }
   subcommand(client, suspectedSubCommand, command, cmd) {
     let subcommandToReturn = client.resolveSubCommand(

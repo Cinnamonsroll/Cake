@@ -1,10 +1,5 @@
 const Discord = require("discord.js");
 const argSystem = require("../../structures/args.js");
-function permName(bitfield = 0) {
-  for (let key in Discord.Permissions.FLAGS)
-    if (Discord.Permissions.FLAGS[key] == bitfield) return key;
-  return null;
-}
 module.exports = async (client, message) => {
   message = client.handleMessage(message);
   if (!message.guild || message.author.bot || message.channel.type === "dm")
@@ -28,16 +23,6 @@ module.exports = async (client, message) => {
     .split(/ +/g);
   let cmd = client.resolveCommand(command.toLowerCase());
   if (!cmd || (cmd.owner && !client.owners.includes(message.author.id))) return;
-  let permissions = (perms) => {
-    for (const bitfield of perms.map((x) => Discord.Permissions.FLAGS[x])) {
-      if (!message.member.permissions.has(bitfield, true))
-        return `You are missing one of the following permissions ${perms
-          .map((x) => Discord.Permissions.FLAGS[x])
-          .filter((perm) => !message.member.permissions.has(perm, true))
-          .map((perm) => `\`${permName(perm)}\``)
-          .join(" | ")}`;
-    }
-  };
   let cooldowns = (name, cooldown) => {
     if (client.owners.includes(message.author.id)) return;
     client.cakeCache.set("cooldowns", {
@@ -84,8 +69,8 @@ module.exports = async (client, message) => {
   if (subCommand && subCommand.error)
     return await message.create(subCommand.error);
   let whichCommand = subCommand || cmd;
-  if (whichCommand.permissions && permissions(whichCommand.permissions))
-    return await message.create(permissions(whichCommand.permissions));
+  if (whichCommand.permissions && client.permissions(message, whichCommand.permissions))
+    return await message.create(client.permissions(message, whichCommand.permissions));
   commandContext = await argSystem(
     client,
     commandContext,
