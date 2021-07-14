@@ -1,4 +1,5 @@
 let { Client } = require("discord.js");
+const cakeMessage = require("./cakeMessage.js");
 module.exports = class baseClient extends Client {
   constructor(defaultPrefix, owners, baseOptions) {
     super(baseOptions);
@@ -74,6 +75,20 @@ module.exports = class baseClient extends Client {
         }, 900000),
       },
     });
+  }
+  subcommand(client, suspectedSubCommand, command, cmd) {
+    let subcommandToReturn = client.resolveSubCommand(
+      client,
+      command,
+      suspectedSubCommand
+    );
+    if (!subcommandToReturn)
+      return {
+        error: `Valid subcommands for the command \`${
+          cmd.name
+        }\` are ${cmd.subcommands.map((x) => `\`${x.name}\``).join(" | ")}`,
+      };
+    return subcommandToReturn;
   }
   resolveSubCommand(client, command, subcommand) {
     let resolveCommand = client.resolveCommand(command);
@@ -167,7 +182,23 @@ module.exports = class baseClient extends Client {
     });
     return this.cakeCache.prefixes[guildId];
   }
-
+  handleMessage(message) {
+    const m = message.toJSON();
+    m.guild = message.guild;
+    m.author = message.author;
+    message = new cakeMessage(this, m, message.channel);
+    this.cakeCache.add("messages", {
+      type: "dict",
+      front: true,
+      max: 9,
+      sub: {
+        name: message.channel.id,
+        type: "list",
+        value: message,
+      },
+    });
+    return message;
+  }
   setupDatabase(mongouri) {
     let mongoose = require("mongoose");
     mongoose.connect(mongouri, {

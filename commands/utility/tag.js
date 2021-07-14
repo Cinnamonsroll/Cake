@@ -38,13 +38,24 @@ module.exports = {
             `${client.messageEmojis.bad} Tag already exists`
           );
         if (
-          client
-            .resolveCommand("tag")
-            .subcommands.map((x) => [
-              ...x.aliases?.map((y) => y.toLowerCase()),
-              x.name.toLowerCase(),
-            ])
-            .includes(name)
+          [
+            ...new Set(
+              client
+                .resolveCommand("tag")
+                .subcommands.map(x =>
+                  [
+                    x.name,
+                    client
+                      .resolveCommand("tag")
+                      .subcommands.map(y => y.aliases)
+                      .filter(z => z)
+                      .flat(),
+                    "cancel"
+                  ].flat()
+                )
+                .flat()
+            )
+          ].includes(name.toLowerCase())
         )
           return await message.create(
             `${client.messageEmojis.bad} Reserved tag name entered`,
@@ -298,6 +309,30 @@ module.exports = {
             `${client.messageEmojis.bad} You do not own this tag`,
             { reply: message.id }
           );
+          if (
+            [
+              ...new Set(
+                client
+                  .resolveCommand("tag")
+                  .subcommands.map(x =>
+                    [
+                      x.name,
+                      client
+                        .resolveCommand("tag")
+                        .subcommands.map(y => y.aliases)
+                        .filter(z => z)
+                        .flat(),
+                      "cancel"
+                    ].flat()
+                  )
+                  .flat()
+              )
+            ].includes(newName.toLowerCase())
+          )
+            return await message.create(
+              `${client.messageEmojis.bad} Reserved tag name entered`,
+              { reply: message.id }
+            );
         await client.tags.renameTag(client, name, newName, tag, message);
         return await message.create(
           `${client.messageEmojis.good} Tag renamed`,

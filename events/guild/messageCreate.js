@@ -1,5 +1,4 @@
 const Discord = require("discord.js");
-const cakeMessage = require("../../structures/cakeMessage.js");
 const argSystem = require("../../structures/args.js");
 function permName(bitfield = 0) {
   for (let key in Discord.Permissions.FLAGS)
@@ -7,20 +6,7 @@ function permName(bitfield = 0) {
   return null;
 }
 module.exports = async (client, message) => {
-  const m = message.toJSON();
-  m.guild = message.guild;
-  m.author = message.author;
-  message = new cakeMessage(client, m, message.channel);
-  client.cakeCache.add("messages", {
-    type: "dict",
-    front: true,
-    max: 9,
-    sub: {
-      name: message.channel.id,
-      type: "list",
-      value: message,
-    },
-  });
+  message = client.handleMessage(message);
   if (!message.guild || message.author.bot || message.channel.type === "dm")
     return;
   let realPrefix = await client.getPrefixes(message.guild.id);
@@ -42,9 +28,42 @@ module.exports = async (client, message) => {
     .split(/ +/g);
   let cmd = client.resolveCommand(command.toLowerCase());
   if (!cmd || (cmd.owner && !client.owners.includes(message.author.id))) return;
-  const guildData = await client.guildDatabase.findOne({
-    guild: message.guild.id,
-  });
+  let permissions = (perms) => {
+    for (const bitfield of perms.map((x) => Discord.Permissions.FLAGS[x])) {
+      if (!message.member.permissions.has(bitfield, true))
+        return `You are missing one of the following permissions ${perms
+          .map((x) => Discord.Permissions.FLAGS[x])
+          .filter((perm) => !message.member.permissions.has(perm, true))
+          .map((perm) => `\`${permName(perm)}\``)
+          .join(" | ")}`;
+    }
+  };
+  let cooldowns = (name, cooldown) => {
+    if (client.owners.includes(message.author.id)) return;
+    client.cakeCache.set("cooldowns", {
+      type: "dict",
+      sub: {
+        name: `${message.author.id}:${name}`,
+        type: "custom",
+        value: Date.now(),
+      },
+    });
+    setTimeout(
+      () => delete client.cakeCache.cooldowns[`${message.author.id}:${name}`],
+      cooldown || 3000
+    );
+  };
+  let checkCooldown = (name, cooldown) => {
+    if ("cooldowns" in client.cakeCache && client.cakeCache.cooldowns[`${message.author.id}:${name}`]) {
+      let cooldownTime = (
+        (client.cakeCache.cooldowns[`${message.author.id}:${name}`] +
+          (cooldown || 3000) -
+          Date.now()) /
+        1000
+      ).toFixed(1);
+      return `Please wait ${cooldownTime} seconds.`;
+    }
+  };
   let commandContext = {
     client,
     Discord,
@@ -52,21 +71,7 @@ module.exports = async (client, message) => {
     prefix,
     args,
   };
-  if (cmd.permissions) {
-    for (const bitfield of cmd.permissions.map(
-      (x) => Discord.Permissions.FLAGS[x]
-    )) {
-      if (!message.member.permissions.has(bitfield, true))
-        return await message.create(
-          `You are missing one of the following permissions ${cmd.permissions
-            .map((x) => Discord.Permissions.FLAGS[x])
-            .filter((perm) => !message.member.permissions.has(perm, true))
-            .map((perm) => `\`${permName(perm)}\``)
-            .join(" | ")}`
-        );
-    }
-  }
-  if (
+  let subCommand =
     cmd.subcommands &&
     args[0] &&
     client.resolveSubCommand(
@@ -74,101 +79,26 @@ module.exports = async (client, message) => {
       command.toLowerCase(),
       args[0].toLowerCase()
     )
-  ) {
-    let subCommand = client.resolveSubCommand(
-      client,
-      command.toLowerCase(),
-      args[0].toLowerCase()
-    );
-    if (!subCommand)
+      ? client.subcommand(client, args[0], command, cmd)
+      : undefined;
+  if (subCommand && subCommand.error)
+    return await message.create(subCommand.error);
+  let whichCommand = subCommand || cmd;
+  if (whichCommand.permissions && permissions(whichCommand.permissions))
+    return await message.create(permissions(whichCommand.permissions));
+  commandContext = await argSystem(
+    client,
+    commandContext,
+    subCommand ? args.slice(1) : args,
+    whichCommand.args || [],
+    message
+  );
+  if (commandContext.message) {
+    if (checkCooldown(whichCommand.name, whichCommand.cooldown))
       return await message.create(
-        `Valid subcommands for the command \`${cmd.name}\` are ${cmd.subcommands
-          .map((x) => `\`${x.name}\``)
-          .join(" | ")}`
+        checkCooldown(whichCommand.name, whichCommand.cooldown)
       );
-    if (subCommand.permissions) {
-      for (const bitfield of subCommand.permissions.map(
-        (x) => Discord.Permissions.FLAGS[x]
-      )) {
-        if (!message.member.permissions.has(bitfield, true))
-          return await message.create(
-            `You are missing one of the following permissions ${subCommand.permissions
-              .map((x) => Discord.Permissions.FLAGS[x])
-              .filter((perm) => !message.member.permissions.has(perm, true))
-              .map((perm) => `\`${permName(perm)}\``)
-              .join(" | ")}`
-          );
-      }
-    }
-    commandContext = await argSystem(
-      client,
-      commandContext,
-      args.slice(1),
-      subCommand.args || [],
-      message
-    );
-    if (commandContext.message) {
-      if (
-        "cooldowns" in client.cakeCache &&
-        client.cakeCache.cooldowns[`${message.author.id}:${subCommand.name}`]
-      ) {
-        let cooldownTime = (
-          (client.cakeCache.cooldowns[`${message.author.id}:${subCommand.name}`] +
-            (subCommand.cooldown || 3000) -
-            Date.now()) /
-          1000
-        ).toFixed(1);
-        return await message.create(`Please wait ${cooldownTime} seconds.`);
-      }
-      subCommand.run(commandContext);
-      client.cakeCache.set("cooldowns", {
-        type: "dict",
-        sub: {
-          name:`${message.author.id}:${subCommand.name}`,
-          type: "custom",
-          value: Date.now(),
-        },
-      });
-      setTimeout(
-        () =>
-          delete client.cakeCache.cooldowns[`${message.author.id}:${subCommand.name}`],
-        subCommand.cooldown || 3000
-      );
-    }
-  } else {
-    commandContext = await argSystem(
-      client,
-      commandContext,
-      args,
-      cmd.args || [],
-      message
-    );
-    if (commandContext.message) {
-      if (
-        "cooldowns" in client.cakeCache &&
-        client.cakeCache.cooldowns[`${message.author.id}:${cmd.name}`]
-      ) {
-        let cooldownTime = (
-          (client.cakeCache.cooldowns[`${message.author.id}:${cmd.name}`] +
-            (cmd.cooldown || 3000) -
-            Date.now()) /
-          1000
-        ).toFixed(1);
-        return await message.create(`Please wait ${cooldownTime} seconds.`);
-      }
-      cmd.run(commandContext);
-      client.cakeCache.set("cooldowns", {
-        type: "dict",
-        sub: {
-          name: `${message.author.id}:${cmd.name}`,
-          type: "custom",
-          value: Date.now(),
-        },
-      });
-      setTimeout(
-        () => delete client.cakeCache.cooldowns[`${message.author.id}:${cmd.name}`],
-        cmd.cooldown || 3000
-      );
-    }
+    whichCommand.run(commandContext);
+    cooldowns(whichCommand.name, whichCommand.cooldown);
   }
 };
