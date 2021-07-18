@@ -23,8 +23,8 @@ module.exports = {
       ),
       { performance } = require("perf_hooks"),
       puppeteer = require("puppeteer");
-    let code = coolThings.contentNoOptions.replace(/\`\`\`(\w+)?/g, "");
-    if (coolThings.flags.includes("html") || coolThings.flags.includes("h")) {
+    let code = coolThings.contentNoOptions.replace(/`{3}(\w+)?/g, "");
+    if (coolThings.flags.includes("html") || coolThings.flags.includes("h") || evalCode.match(/(`{3})(html)/gi) || evalCode.match(/(<([^>]+)>)/gi)) {
       const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
       const page = await browser.newPage();
       page.setContent(code);

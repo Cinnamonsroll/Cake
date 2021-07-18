@@ -1,7 +1,7 @@
 let { Client } = require("discord.js");
-let Discord = require("discord.js")
+let Discord = require("discord.js");
 const cakeMessage = require("./cakeMessage.js");
-const cakeArray  = require("./cakeArray.js")
+const cakeArray = require("./cakeArray.js");
 function permName(bitfield = 0) {
   for (let key in Discord.Permissions.FLAGS)
     if (Discord.Permissions.FLAGS[key] == bitfield) return key;
@@ -83,7 +83,7 @@ module.exports = class cakeClient extends Client {
       },
     });
   }
-  permissions(message, perms){
+  permissions(message, perms) {
     for (const bitfield of perms.map((x) => Discord.Permissions.FLAGS[x])) {
       if (!message.member.permissions.has(bitfield, true))
         return `You are missing one of the following permissions ${perms
@@ -146,7 +146,7 @@ module.exports = class cakeClient extends Client {
     );
     return command || undefined;
   }
-  async request(method, url, body = {}) {
+  async request(method, url, options = {}) {
     let fetch = require("node-fetch");
     let res;
     if (method === "GET" || method === "DELETE") {
@@ -161,12 +161,14 @@ module.exports = class cakeClient extends Client {
     } else {
       res = await fetch(`https://discord.com/api/v9${url}`, {
         method,
-        headers: {
-          Authorization: `Bot ${this.config.token}`,
-          "User-Agent": `DiscordBot`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
+        headers: options.headers
+          ? options.headers
+          : {
+              Authorization: `Bot ${this.config.token}`,
+              "User-Agent": `DiscordBot`,
+              "Content-Type": "application/json",
+            },
+        body: JSON.stringify(options.body ? options.body : options),
       });
     }
 

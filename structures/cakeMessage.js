@@ -1,10 +1,10 @@
 const Discord = require("discord.js");
-let fetch = require("node-fetch");
 let { parseButtons, parseDropdown } = require("./parser.js");
 module.exports = class CakeMessage extends Discord.Message {
   constructor(client, data, channel) {
     super(client, data, channel);
     this.cache = client.cakeCache.messages?.[channel.id];
+    this.created = Date.now()
   }
   async delete() {
     if (this.deleted) return;
@@ -107,14 +107,15 @@ module.exports = class CakeMessage extends Discord.Message {
     let m = message;
     m.guild = this.guild;
     message = new this.constructor(this.client, m, this.channel);
-    if (!options.editedMessage) this.client.cakeCache.set("messageMap", {
-      type: "dict",
-      sub: {
-        name: this.id,
-        type: "custom",
-        value: message,
-      },
-    });
+    if (!options.editedMessage)
+      this.client.cakeCache.set("messageMap", {
+        type: "dict",
+        sub: {
+          name: this.id,
+          type: "custom",
+          value: message,
+        },
+      });
     if (options.reactions) {
       for (let reaction of options.reactions) {
         await message.add_reaction(reaction.emoji);
