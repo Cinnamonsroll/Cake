@@ -28,14 +28,16 @@ module.exports = {
       : "";
     let avatarEmbeds = [];
     for (let type of types) {
-      let embed = {};
-      embed.color = Number("0x" + client.color.slice(1));
-      embed.title = `\`${user.user.tag}\'s\` Avatar`;
-      embed.description = `\`${type.toUpperCase()}\` ${sizes
-        .map(
-          (x) => `[${x}](${avatarURL(x, type, type === "gif" ? true : false)})`
-        )
-        .join(" | ")}`;
+      let embed = {
+        color: Number("0x" + client.color.slice(1)),
+        title: `\`${user.user.tag}\'s\` Avatar`,
+        description: `\`${type.toUpperCase()}\` ${sizes
+          .map(
+            (x) =>
+              `[${x}](${avatarURL(x, type, type === "gif" ? true : false)})`
+          )
+          .join(" | ")}`,
+      };
       embed.image = {
         url: avatarURL(1024, type, type === "gif" ? true : false),
         proxyUrl: avatarURL(1024, type, type === "gif" ? true : false),
@@ -45,7 +47,7 @@ module.exports = {
     await client.pagination(message, {
       embeds: avatarEmbeds,
       dropdown: types,
-      editedMessage
+      editedMessage,
     });
   },
 };

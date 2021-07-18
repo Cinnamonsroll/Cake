@@ -1,6 +1,7 @@
 let { Client } = require("discord.js");
 let Discord = require("discord.js")
 const cakeMessage = require("./cakeMessage.js");
+const cakeArray  = require("./cakeArray.js")
 function permName(bitfield = 0) {
   for (let key in Discord.Permissions.FLAGS)
     if (Discord.Permissions.FLAGS[key] == bitfield) return key;
@@ -13,7 +14,7 @@ module.exports = class cakeClient extends Client {
     this.owners = owners;
     this.cakeCache = new (require("./cacheManager.js"))();
     this.cache = {};
-    this.commands = [];
+    this.commands = new cakeArray();
     this.color = "#FFFEFB";
     this.config = require("../config.json");
     this.guildDatabase = require("../database/guild.js");

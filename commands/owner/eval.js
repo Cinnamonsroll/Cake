@@ -1,3 +1,4 @@
+let { MessageAttachment } = require("discord.js");
 module.exports = {
   name: "eval",
   description: "Evals code",
@@ -20,8 +21,18 @@ module.exports = {
       coolThings = new (require("string-toolkit"))().parseOptions(
         evalCode.split(" ")
       ),
-      { performance } = require("perf_hooks");
+      { performance } = require("perf_hooks"),
+      puppeteer = require("puppeteer");
     let code = coolThings.contentNoOptions.replace(/\`\`\`(\w+)?/g, "");
+    if (coolThings.flags.includes("html") || coolThings.flags.includes("h")) {
+      const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+      const page = await browser.newPage();
+      page.setContent(code);
+      let screenshot = await page.screenshot({fullpage:true})
+      await browser.close();
+      let attachment = new MessageAttachment(screenshot,'html.png')
+      return await message.channel.send({files: [attachment]})
+    }
     try {
       let time = performance.now();
       let evaled = eval(code);
@@ -54,7 +65,7 @@ module.exports = {
         embeds: evalEmbeds,
         dropdown: evalEmbeds.slice(0, 25),
         page: true,
-        editedMessage
+        editedMessage,
       });
     } catch (err) {
       return message.create("", {
@@ -67,7 +78,7 @@ module.exports = {
           )}\`\`\``,
         },
         reply: message.id,
-        editedMessage
+        editedMessage,
       });
     }
   },

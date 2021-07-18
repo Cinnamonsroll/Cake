@@ -64,6 +64,7 @@ module.exports = {
         });
       }
     }
+    if(!status.length) return await message.create("No commands found", {reply: message.id, editedMessage})
     status = status.map((x, i) => `${++i}. ${x.command} (${x.status})`);
     status = Array.from(
       {
