@@ -12,6 +12,7 @@
   "dependencies": {
     "@sapphire/type": "^2.0.11",
     "axios": "^0.21.1",
+    "cheerio": "^1.0.0-rc.10",
     "discord.js": "^13.0.0-dev.1dcad05.1626134620",
     "form-data": "^4.0.0",
     "moment": "^2.29.1",

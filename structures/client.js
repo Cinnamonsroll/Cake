@@ -14,6 +14,7 @@ module.exports = class cakeClient extends Client {
     this.owners = owners;
     this.cakeCache = new (require("./cacheManager.js"))();
     this.cache = {};
+    this.request = new (require("./request.js"))()
     this.commands = new cakeArray();
     this.color = "#FFFEFB";
     this.config = require("../config.json");
@@ -147,10 +148,11 @@ module.exports = class cakeClient extends Client {
     return command || undefined;
   }
   async request(method, url, options = {}) {
+    if(!options.notDiscord) url = `https://discord.com/api/v9${url}`
     let fetch = require("node-fetch");
     let res;
     if (method === "GET" || method === "DELETE") {
-      res = await fetch(`https://discord.com/api/v9${url}`, {
+      res = await fetch(`${url}`, {
         method,
         headers: {
           Authorization: `Bot ${this.config.token}`,
@@ -159,7 +161,7 @@ module.exports = class cakeClient extends Client {
         },
       });
     } else {
-      res = await fetch(`https://discord.com/api/v9${url}`, {
+      res = await fetch(`${url}`, {
         method,
         headers: options.headers
           ? options.headers

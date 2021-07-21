@@ -36,26 +36,26 @@ module.exports = {
         if (tag)
           return await message.create(
             `${client.messageEmojis.bad} Tag already exists`,
-            {reply: message.id, editedMessage}
+            { reply: message.id, editedMessage }
           );
         if (
           [
             ...new Set(
               client
                 .resolveCommand("tag")
-                .subcommands.map(x =>
+                .subcommands.map((x) =>
                   [
                     x.name,
                     client
                       .resolveCommand("tag")
-                      .subcommands.map(y => y.aliases)
-                      .filter(z => z)
+                      .subcommands.map((y) => y.aliases)
+                      .filter((z) => z)
                       .flat(),
-                    "cancel"
+                    "cancel",
                   ].flat()
                 )
                 .flat()
-            )
+            ),
           ].includes(name.toLowerCase())
         )
           return await message.create(
@@ -78,7 +78,7 @@ module.exports = {
         if (!tags.length)
           return await message.create("This guild has no tags", {
             reply: message.id,
-            editedMessage
+            editedMessage,
           });
         tags = Array.from(
           {
@@ -99,7 +99,7 @@ module.exports = {
           embeds: tags,
           dropdown: tags.slice(0, 25),
           page: true,
-          editedMessage
+          editedMessage,
         });
       },
     },
@@ -190,7 +190,7 @@ module.exports = {
             `${client.messageEmojis.bad} Tag not found`,
             {
               reply: message.id,
-              editedMessage
+              editedMessage,
             }
           );
         if (tag.owner !== message.author.id)
@@ -203,7 +203,7 @@ module.exports = {
           `${client.messageEmojis.good} Tag updated`,
           {
             reply: message.id,
-            editedMessage
+            editedMessage,
           }
         );
       },
@@ -231,7 +231,7 @@ module.exports = {
             `${client.messageEmojis.bad} Tag not found`,
             {
               reply: message.id,
-              editedMessage
+              editedMessage,
             }
           );
         if (tag.owner !== message.author.id)
@@ -244,7 +244,7 @@ module.exports = {
           `${client.messageEmojis.good} Alias added`,
           {
             reply: message.id,
-            editedMessage
+            editedMessage,
           }
         );
       },
@@ -267,7 +267,7 @@ module.exports = {
             `${client.messageEmojis.bad} Tag not found`,
             {
               reply: message.id,
-              editedMessage
+              editedMessage,
             }
           );
         tag.owner = message.guild.members.cache.get(tag.owner).user.tag;
@@ -284,7 +284,9 @@ module.exports = {
                     : V
                 }`
             )
-            .join("\n")}`, {reply: message.id, editedMessage});
+            .join("\n")}`,
+          { reply: message.id, editedMessage }
+        );
       },
     },
     {
@@ -310,7 +312,7 @@ module.exports = {
             `${client.messageEmojis.bad} Tag not found`,
             {
               reply: message.id,
-              editedMessage
+              editedMessage,
             }
           );
         if (tag.owner !== message.author.id)
@@ -318,36 +320,36 @@ module.exports = {
             `${client.messageEmojis.bad} You do not own this tag`,
             { reply: message.id, editedMessage }
           );
-          if (
-            [
-              ...new Set(
-                client
-                  .resolveCommand("tag")
-                  .subcommands.map(x =>
-                    [
-                      x.name,
-                      client
-                        .resolveCommand("tag")
-                        .subcommands.map(y => y.aliases)
-                        .filter(z => z)
-                        .flat(),
-                      "cancel"
-                    ].flat()
-                  )
-                  .flat()
-              )
-            ].includes(newName.toLowerCase())
-          )
-            return await message.create(
-              `${client.messageEmojis.bad} Reserved tag name entered`,
-              { reply: message.id, editedMessage }
-            );
+        if (
+          [
+            ...new Set(
+              client
+                .resolveCommand("tag")
+                .subcommands.map((x) =>
+                  [
+                    x.name,
+                    client
+                      .resolveCommand("tag")
+                      .subcommands.map((y) => y.aliases)
+                      .filter((z) => z)
+                      .flat(),
+                    "cancel",
+                  ].flat()
+                )
+                .flat()
+            ),
+          ].includes(newName.toLowerCase())
+        )
+          return await message.create(
+            `${client.messageEmojis.bad} Reserved tag name entered`,
+            { reply: message.id, editedMessage }
+          );
         await client.tags.renameTag(client, name, newName, tag, message);
         return await message.create(
           `${client.messageEmojis.good} Tag renamed`,
           {
             reply: message.id,
-            editedMessage
+            editedMessage,
           }
         );
       },
@@ -358,11 +360,11 @@ module.exports = {
     if (!tag)
       return await message.create(`${client.messageEmojis.bad} Tag not found`, {
         reply: message.id,
-        editedMessage
+        editedMessage,
       });
     return await message.create(tag.content, {
       reply: message.id,
-      editedMessage
+      editedMessage,
     });
   },
 };

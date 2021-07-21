@@ -4,31 +4,33 @@ module.exports = class CakeMessage extends Discord.Message {
   constructor(client, data, channel) {
     super(client, data, channel);
     this.cache = client.cakeCache.messages?.[channel.id];
-    this.created = Date.now()
+    this.created = Date.now();
   }
   async delete() {
     if (this.deleted) return;
-    await this.client.request(
-      "DELETE",
-      `/channels/${this.channel.id}/messages/${this.id}`
+    await this.client.request.delete(
+      `https://discord.com/api/v9/channels/${this.channel.id}/messages/${this.id}`
     );
     return this;
   }
   async edit(content, options = {}) {
-    let message = await this.client
-      .request("PATCH", `/channels/${this.channel.id}/messages/${this.id}`, {
-        content: (String(content) || "").slice(0, 2000),
-        embed: options.embed,
-        components: options.components || [],
-        allowed_mentions: {
-          replied_user: false,
-          parse: [],
+    let message = await this.client.request.patch(
+      `https://discord.com/api/v9/channels/${this.channel.id}/messages/${this.id}`,
+      {
+        body: {
+          content: (String(content) || "").slice(0, 2000),
+          embed: options.embed,
+          components: options.components || [],
+          allowed_mentions: {
+            replied_user: false,
+            parse: [],
+          },
+          message_reference: {
+            message_id: options.reply,
+          },
         },
-        message_reference: {
-          message_id: options.reply,
-        },
-      })
-      .then((res) => res.json());
+      }
+    );
     let m = message;
     m.guild = this.guild;
     return new this.constructor(this.client, m, this.channel);
@@ -38,11 +40,10 @@ module.exports = class CakeMessage extends Discord.Message {
       if (emoji.match(/^[0-9]+$/)) return `unknown:${emoji}`;
       return encodeURIComponent(emoji);
     };
-    await this.client.request(
-      "PUT",
-      `/channels/${this.channel.id}/messages/${this.id}/reactions/${parseEmoji(
-        emoji
-      )}/@me`
+    await this.client.request.put(
+      `https://discord.com/api/v9/channels/${this.channel.id}/messages/${
+        this.id
+      }/reactions/${parseEmoji(emoji)}/@me`
     );
     return this;
   }
@@ -90,17 +91,19 @@ module.exports = class CakeMessage extends Discord.Message {
         embed: options.embed ?? {},
         components: options.components || components.filter((x) => x) || [],
       });
-    let message = await this.client
-      .request("POST", `/channels/${this.channel.id}/messages`, {
-        content: (String(content) || "").slice(0, 2000),
-        embed: options.embed,
-        components: options.components || components.filter((x) => x) || [],
-        allowed_mentions: {
-          replied_user: false,
-          parse: [],
-        },
-        message_reference: {
-          message_id: options.reply,
+    let message = await this.client.request
+      .post(`https://discord.com/api/v9/channels/${this.channel.id}/messages`, {
+        body: {
+          content: (String(content) || "").slice(0, 2000),
+          embed: options.embed,
+          components: options.components || components.filter((x) => x) || [],
+          allowed_mentions: {
+            replied_user: false,
+            parse: [],
+          },
+          message_reference: {
+            message_id: options.reply,
+          },
         },
       })
       .then((res) => res.json());

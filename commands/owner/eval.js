@@ -24,14 +24,33 @@ module.exports = {
       { performance } = require("perf_hooks"),
       puppeteer = require("puppeteer");
     let code = coolThings.contentNoOptions.replace(/`{3}(\w+)?/g, "");
-    if (coolThings.flags.includes("html") || coolThings.flags.includes("h") || evalCode.match(/(`{3})(html)/gi) || evalCode.match(/(<([^>]+)>)/gi)) {
-      const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
-      const page = await browser.newPage();
-      page.setContent(code);
-      let screenshot = await page.screenshot({fullpage:true})
-      await browser.close();
-      let attachment = new MessageAttachment(screenshot,'html.png')
-      return await message.channel.send({files: [attachment]})
+    if (
+      coolThings.flags.includes("html") ||
+      coolThings.flags.includes("h") ||
+      evalCode.match(/(`{3})(html)/gi)
+    ) {
+      try {
+        const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+        const page = await browser.newPage();
+        page.setContent(code);
+        let screenshot = await page.screenshot({ fullpage: true });
+        await browser.close();
+        let attachment = new MessageAttachment(screenshot, "html.png");
+        return await message.channel.send({ files: [attachment] });
+      } catch (err) {
+        return message.create("", {
+          embed: {
+            color: Number("0x" + client.color.slice(1)),
+            title: "Error",
+            description: `\`\`\`js\n ${err.message.replace(
+              /(require(\s+)stack(:)([\s\S]*))?/gim,
+              ""
+            )}\`\`\``,
+          },
+          reply: message.id,
+          editedMessage,
+        });
+      }
     }
     try {
       let time = performance.now();
