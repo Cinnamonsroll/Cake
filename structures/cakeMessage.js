@@ -30,7 +30,7 @@ module.exports = class CakeMessage extends Discord.Message {
           },
         },
       }
-    );
+    ).then(r => r.json())
     let m = message;
     m.guild = this.guild;
     return new this.constructor(this.client, m, this.channel);
@@ -105,8 +105,7 @@ module.exports = class CakeMessage extends Discord.Message {
             message_id: options.reply,
           },
         },
-      })
-      .then((res) => res.json());
+      }).then(r => r.json())
     let m = message;
     m.guild = this.guild;
     message = new this.constructor(this.client, m, this.channel);
