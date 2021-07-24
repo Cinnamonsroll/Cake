@@ -25,7 +25,7 @@ module.exports = {
     await guildDatabase.findOne({guild: message.guild.id})
     let firstCacheCall = Date.now()
     cakeCache.messages[message.channel.id][0]
-    await message.create("", {
+    await message.create("Ping!", {
       embed: {
         color: Number("0x" + color.slice(1)),
         fields: [

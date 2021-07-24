@@ -111,6 +111,7 @@ module.exports = async function (message, options = {}) {
   return await message.create("\u200b", {
     embed: options.embeds[page],
     ...things,
-    editedMessage: options.editedMessage
+    editedMessage: options.editedMessage,
+    reply: message.id
   });
 };

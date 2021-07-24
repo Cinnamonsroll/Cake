@@ -11,7 +11,7 @@ module.exports = class cakeCache {
     };
     return type === "custom"
       ? type
-      : Object.keys(types).includes(type)
+      : type in types
       ? types[type]
       : undefined;
   }
