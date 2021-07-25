@@ -147,6 +147,7 @@ module.exports = {
       ["041004", "Midnight Moss"],
       ["041322", "Black Pearl"],
       ["042E4C", "Blue Whale"],
+      ["7289da", "Blurple"],
       ["044022", "Zuccini"],
       ["044259", "Teal Blue"],
       ["051040", "Deep Cove"],

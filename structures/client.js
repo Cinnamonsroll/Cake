@@ -49,6 +49,7 @@ module.exports = class cakeClient extends Client {
     let joins = message.guild.members.cache
       .sort((a, b) => a.joinedTimestamp - b.joinedTimestamp)
       .array();
+      let caretMatch = query.match(/^\^+$/)
     return (
       message.guild.members.cache.get(query.replace(/[<@​!?>]/g, "")) ||
       message.guild.members.cache.find((m) =>
@@ -56,7 +57,7 @@ module.exports = class cakeClient extends Client {
           e.toLowerCase().includes(query.toLowerCase())
         )
       ) ||
-      joins[parseInt(query) - 1] ||
+      joins[parseInt(query) - 1] || caretMatch.length ? message.client.cakeCache.messages[message.channel.id]?.[caretMatch[0].length]?.member : undefined ||
       (author ? message.member : undefined)
     );
   }
@@ -66,7 +67,7 @@ module.exports = class cakeClient extends Client {
       type: "dict",
       sub: {
         name: bucket,
-        type: "custom",
+        type: "dict",
         value: setTimeout(async (interaction) => {
           if (!interaction) return;
           if (
@@ -123,7 +124,7 @@ module.exports = class cakeClient extends Client {
       type: "dict",
       sub: {
         name: bucket,
-        type: "custom",
+        type: "dict",
         value: setTimeout(async (interaction) => {
           if (!interaction) return;
           if (

@@ -46,7 +46,7 @@ module.exports = {
     }
     await client.pagination(message, {
       embeds: avatarEmbeds,
-      dropdown: types,
+      dropdown: types.map(x => x.toUpperCase()),
       editedMessage,
     });
   },
