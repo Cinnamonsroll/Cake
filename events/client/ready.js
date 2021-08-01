@@ -1,4 +1,4 @@
-let request = (module.exports = async (client) => {
+module.exports = async (client) => {
   let slashCommands = client.commands.filter((x) => x.slash);
   let commands = await client.request.get(
     "https://discord.com/api/v9/applications/859948184339087370/commands"
@@ -24,4 +24,4 @@ let request = (module.exports = async (client) => {
     );
   }
   console.log("Bot started");
-});
+}
